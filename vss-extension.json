@@ -1,0 +1,73 @@
+{
+  "manifestVersion": 1,
+  "id": "uvpy-manager",
+  "name": "UvPy Manager",
+  "description": "UvPy Manager brings Python version management to your editor, powered by uv. Install any Python version, use it globally or inside a virtual environment, and switch between versions in seconds without leaving your workflow.",
+  "publisher": "hendamm",
+  "version": "0.0.1",
+  "public": false,
+  "categories": ["Azure Pipelines"],
+  "content": {
+    "details": {
+      "path": "README.md"
+    },
+    "license": {
+      "path": "LICENSE"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/henryd24/azdevops-extension-uvpy-manager"
+  },
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services.Cloud"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "uvpy-installer-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/uvpy-installer"
+      }
+    },
+    {
+      "id": "uvpy-py-installer-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/uvpy-py-installer"
+      }
+    },
+    {
+      "id": "uvpy-venv-configure-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/uvpy-venv-configure"
+      }
+    },
+    {
+      "id": "uvpy-uv-commands-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "tasks/uvpy-uv-commands"
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "tasks"
+    },
+    {
+      "path": "images",
+      "addressable": true
+    }
+  ],
+  "icons": {
+    "default": "images/extension-icon.png"
+  }
+}

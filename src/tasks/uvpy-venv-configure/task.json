@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "f062f351-d486-4344-8d66-515e378372b6",
+  "name": "hendamm-uvpy-venv-configure",
+  "friendlyName": "Venv Configure",
+  "description": "Venv Configure",
+  "helpMarkDown": "Venv Configure",
+  "category": "Utility",
+  "author": "Henry Daniel Mosquera",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "visibility": ["Build", "Release"],
+  "instanceNameFormat": "Venv Configure",
+  "inputs": [
+    {
+      "name": "message",
+      "type": "string",
+      "label": "Message",
+      "defaultValue": "Hello",
+      "required": true,
+      "helpMarkDown": "Message to print."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "label": "Verbose",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Prints extra debug information."
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "result",
+      "description": "Result produced by the task"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "minimumAgentVersion": "4.248.0"
+}

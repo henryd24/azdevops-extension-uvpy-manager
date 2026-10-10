@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "89354abe-f648-4c37-aff3-6622b05b95ca",
+  "name": "hendamm-uvpy-uv-commands",
+  "friendlyName": "Uv Commands",
+  "description": "Uv Commands",
+  "helpMarkDown": "Uv Commands",
+  "category": "Utility",
+  "author": "Henry Daniel Mosquera",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "visibility": ["Build", "Release"],
+  "instanceNameFormat": "Uv Commands",
+  "inputs": [
+    {
+      "name": "message",
+      "type": "string",
+      "label": "Message",
+      "defaultValue": "Hello",
+      "required": true,
+      "helpMarkDown": "Message to print."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "label": "Verbose",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Prints extra debug information."
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "result",
+      "description": "Result produced by the task"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "minimumAgentVersion": "4.248.0"
+}

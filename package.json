@@ -1,0 +1,24 @@
+{
+  "name": "uvpy-manager",
+  "version": "1.0.0",
+  "description": "UvPy Manager brings Python version management to your editor, powered by uv. Install any Python version, use it globally or inside a virtual environment, and switch between versions in seconds without leaving your workflow.",
+  "private": true,
+  "scripts": {
+    "postinstall": "azde-scripts install src/tasks",
+    "build": "azde-scripts build src/tasks",
+    "test": "node scripts/tasks.js test",
+    "package:tasks": "node scripts/tasks.js package",
+    "pack": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --overrides-file config/release.json",
+    "packupversion": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --rev-version --overrides-file config/release.json",
+    "pack:dev": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --overrides-file config/dev.json",
+    "packupversion:dev": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --rev-version --overrides-file config/dev.json",
+    "clean:tasks": "node -e \"require('fs').rmSync('tasks',{recursive:true,force:true})\""
+  },
+  "author": "Henry Daniel Mosquera",
+  "license": "MIT",
+  "dependencies": {
+    "azde-scripts": "^2.0.2",
+    "tfx-cli": "^0.24.2",
+    "typescript": "^5.7.2"
+  }
+}
