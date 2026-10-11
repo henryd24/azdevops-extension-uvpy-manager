@@ -1,0 +1,94 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "89354abe-f648-4c37-aff3-6622b05b95ca",
+  "name": "UvRun",
+  "friendlyName": "Run uv commands",
+  "description": "Run one or several uv commands (sync, pip install, run, tool run...)",
+  "helpMarkDown": "Run one or several uv commands (sync, pip install, run, tool run...)",
+  "category": "Utility",
+  "author": "Henry Daniel Mosquera",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "instanceNameFormat": "Run uv commands",
+  "inputs": [
+    {
+      "name": "commands",
+      "type": "multiLine",
+      "label": "uv commands",
+      "defaultValue": "sync --frozen",
+      "required": true,
+      "helpMarkDown": "One uv command per line, without the leading `uv` (it is accepted and ignored). Lines starting with `#` are comments. Single or double quotes group arguments. Example: `sync --frozen`, `pip install \"ruff>=0.5\"`, `run pytest`.",
+      "properties": {
+        "resizable": "true",
+        "rows": "5"
+      }
+    },
+    {
+      "name": "failOnError",
+      "type": "boolean",
+      "label": "Stop on first error",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "Stop at the first command with a non-zero exit code and fail the task. When off, every command runs and the task finishes with warnings if any failed."
+    },
+    {
+      "name": "env",
+      "type": "multiLine",
+      "label": "Extra environment (KEY=VALUE)",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "One KEY=VALUE per line. Useful for UV_INDEX_URL, UV_CACHE_DIR, UV_NO_CACHE...",
+      "properties": {
+        "resizable": "true",
+        "rows": "3"
+      }
+    },
+    {
+      "name": "workingDirectory",
+      "type": "filePath",
+      "label": "Working directory",
+      "defaultValue": "$(System.DefaultWorkingDirectory)",
+      "required": false,
+      "helpMarkDown": "Directory where uv runs."
+    },
+    {
+      "name": "autoInstallUv",
+      "type": "boolean",
+      "label": "Install uv if missing",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If uv is not found, download it (same logic as the UvSetup task). Disable on locked-down agents and run UvSetup / pre-bake uv instead."
+    },
+    {
+      "name": "uvVersion",
+      "type": "string",
+      "label": "uv version",
+      "defaultValue": "latest",
+      "required": false,
+      "helpMarkDown": "Only used when uv has to be installed. `latest` or an exact version such as `0.8.0`.",
+      "visibleRule": "autoInstallUv = true"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "exitCode",
+      "description": "0 if every command succeeded, otherwise the exit code of the first failing command"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "minimumAgentVersion": "4.248.0"
+}

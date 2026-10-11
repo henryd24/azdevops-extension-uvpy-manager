@@ -1,6 +1,6 @@
 {
   "id": "uvpy-manager",
-  "public": true,
+  "public": false,
   "publisher": "hendamm",
   "version": "0.0.1"
 }

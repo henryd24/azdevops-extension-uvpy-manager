@@ -2,11 +2,13 @@
   "manifestVersion": 1,
   "id": "uvpy-manager",
   "name": "UvPy Manager",
-  "description": "UvPy Manager brings Python version management to your editor, powered by uv. Install any Python version, use it globally or inside a virtual environment, and switch between versions in seconds without leaving your workflow.",
+  "description": "Install uv, manage Python versions, create virtual environments and run uv commands in your pipelines. Works on Linux, Windows and macOS agents.",
   "publisher": "hendamm",
   "version": "0.0.1",
   "public": false,
-  "categories": ["Azure Pipelines"],
+  "categories": [
+    "Azure Pipelines"
+  ],
   "content": {
     "details": {
       "path": "README.md"
@@ -26,35 +28,43 @@
   ],
   "contributions": [
     {
-      "id": "uvpy-installer-task",
+      "id": "uv-setup-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
-        "name": "tasks/uvpy-installer"
+        "name": "tasks/uv-setup"
       }
     },
     {
-      "id": "uvpy-py-installer-task",
+      "id": "uv-python-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
-        "name": "tasks/uvpy-py-installer"
+        "name": "tasks/uv-python"
       }
     },
     {
-      "id": "uvpy-venv-configure-task",
+      "id": "uv-venv-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
-        "name": "tasks/uvpy-venv-configure"
+        "name": "tasks/uv-venv"
       }
     },
     {
-      "id": "uvpy-uv-commands-task",
+      "id": "uv-run-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
-        "name": "tasks/uvpy-uv-commands"
+        "name": "tasks/uv-run"
       }
     }
   ],
