@@ -1,4 +1,4 @@
-<p align="center"><img src="images/logo.png" alt="UvPy Manager logo" width="120"></p>
+<p align="center"><img src="images/logo.png" alt="UvPy Manager logo" width="160"></p>
 
 # UvPy Manager
 
