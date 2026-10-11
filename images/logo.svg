@@ -1,23 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="UvPy Manager">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4584b6"/>
-      <stop offset="1" stop-color="#2b5b84"/>
+      <stop offset="0" stop-color="#0f5d6e"/>
+      <stop offset="1" stop-color="#0a2f45"/>
     </linearGradient>
-    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffe873"/>
-      <stop offset="1" stop-color="#ffd43b"/>
-    </linearGradient>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#e879f9"/>
-      <stop offset="1" stop-color="#a855f7"/>
-    </linearGradient>
+    <clipPath id="clip"><rect width="128" height="128" rx="28"/></clipPath>
   </defs>
-  <!-- Python blue background -->
-  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
-  <!-- uv violet circular arrow: virtual environment / switching versions -->
-  <circle cx="64" cy="64" r="44" fill="none" stroke="url(#ring)" stroke-width="8" stroke-linecap="round" stroke-dasharray="200 77" transform="rotate(100 64 64)"/>
-  <path d="M97 62h22l-11 17z" fill="#c26bf5" stroke="#c26bf5" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Python yellow bolt: speed -->
-  <path transform="translate(64 64) scale(.82) translate(-64 -64)" d="M72 18 38 70h22l-8 40 38-56H69z" fill="url(#bolt)" stroke="#1e3a52" stroke-opacity=".35" stroke-width="2" stroke-linejoin="round"/>
+  <g clip-path="url(#clip)">
+    <rect width="128" height="128" fill="url(#bg)"/>
+    <!-- layered waves -->
+    <path d="M-4 30C20 12 38 44 62 30s46-22 74-8v-40H-4z" fill="#1c8a99" fill-opacity=".55"/>
+    <path d="M-4 104C22 86 40 118 66 104s44-20 70-6v40H-4z" fill="#1c8a99" fill-opacity=".45"/>
+    <path d="M-4 118C24 104 44 130 70 118s40-14 66-4v30H-4z" fill="#2aa5b3" fill-opacity=".4"/>
+  </g>
+
+  <!-- uv cube (violet) -->
+  <g transform="translate(6 3)">
+    <path d="M64 30 97 49 64 68 31 49z" fill="#7566c2"/>
+    <path d="M31 49 64 68v38L31 87z" fill="#5240a0"/>
+    <path d="M64 68 97 49v38l-33 19z" fill="#2f2461"/>
+    <!-- "uv" lettering on the left face -->
+    <g transform="matrix(1 .5758 0 1 31 49)" fill="none" stroke="#fdf3dc" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 12v12a4.6 4.6 0 0 0 9.2 0V12"/>
+      <path d="M20 12l5.2 17L30.4 12"/>
+    </g>
+  </g>
+
+  <!-- Python-inspired pair: two overlapping rounded shapes in blue and yellow -->
+  <rect x="4" y="42" width="26" height="24" rx="10" fill="#3b7fb5" stroke="#0a2f45" stroke-width="2.5"/>
+  <rect x="15" y="62" width="26" height="24" rx="10" fill="#ffd43b" stroke="#0a2f45" stroke-width="2.5"/>
+  <circle cx="12" cy="51" r="2.6" fill="#0a2f45"/>
+  <circle cx="33" cy="77" r="2.6" fill="#0a2f45"/>
+
+  <!-- bolt -->
+  <path d="M104 12 90 38h11l-5 20 18-27h-11z" fill="#ffd43b" stroke="#0a2f45" stroke-opacity=".35" stroke-width="1.5" stroke-linejoin="round"/>
 </svg>
