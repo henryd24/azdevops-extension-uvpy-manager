@@ -1,0 +1,129 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "f062f351-d486-4344-8d66-515e378372b6",
+  "name": "UvVenv",
+  "friendlyName": "Create virtual environment (uv)",
+  "description": "Create a virtual environment with uv and optionally sync dependencies",
+  "helpMarkDown": "Create a virtual environment with uv and optionally sync dependencies",
+  "category": "Utility",
+  "author": "Henry Daniel Mosquera",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "instanceNameFormat": "Create virtual environment (uv)",
+  "inputs": [
+    {
+      "name": "venvPath",
+      "type": "string",
+      "label": "Venv path",
+      "defaultValue": ".venv",
+      "required": false,
+      "helpMarkDown": "Relative to the working directory. An existing venv is reused unless 'Recreate if it exists' is on."
+    },
+    {
+      "name": "pythonVersion",
+      "type": "string",
+      "label": "Python version",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "uv python request (`3.12`, `pypy@3.10`...). Empty = UV_PYTHON (set by UvPython) or .python-version or the interpreter uv finds. uv downloads it if needed."
+    },
+    {
+      "name": "clear",
+      "type": "boolean",
+      "label": "Recreate if it exists",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "Maps to `uv venv --clear`."
+    },
+    {
+      "name": "syncMode",
+      "type": "pickList",
+      "label": "Dependencies",
+      "defaultValue": "none",
+      "required": false,
+      "options": {
+        "none": "Do not install anything",
+        "project": "uv sync (pyproject.toml / uv.lock)",
+        "requirements": "uv pip install -r requirements file"
+      },
+      "helpMarkDown": "How dependencies are installed into the venv."
+    },
+    {
+      "name": "requirementsFile",
+      "type": "filePath",
+      "label": "Requirements file",
+      "defaultValue": "requirements.txt",
+      "required": false,
+      "visibleRule": "syncMode = requirements",
+      "helpMarkDown": "Used when Dependencies = requirements."
+    },
+    {
+      "name": "syncArgs",
+      "type": "string",
+      "label": "Extra uv arguments",
+      "defaultValue": "",
+      "required": false,
+      "visibleRule": "syncMode != none",
+      "helpMarkDown": "Appended to `uv sync` or `uv pip install -r`. Examples: `--frozen --all-extras --group dev` (project) or `--index-url https://feed/simple` (requirements)."
+    },
+    {
+      "name": "activate",
+      "type": "boolean",
+      "label": "Activate for following steps",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "Sets VIRTUAL_ENV and UV_PROJECT_ENVIRONMENT and puts the venv bin/Scripts folder first in the PATH, so `python`, `pip`, `uv sync` and `uv run` use it in the following steps."
+    },
+    {
+      "name": "workingDirectory",
+      "type": "filePath",
+      "label": "Working directory",
+      "defaultValue": "$(System.DefaultWorkingDirectory)",
+      "required": false,
+      "helpMarkDown": "Directory where uv runs."
+    },
+    {
+      "name": "autoInstallUv",
+      "type": "boolean",
+      "label": "Install uv if missing",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If uv is not found, download it (same logic as the UvSetup task). Disable on locked-down agents and run UvSetup / pre-bake uv instead."
+    },
+    {
+      "name": "uvVersion",
+      "type": "string",
+      "label": "uv version",
+      "defaultValue": "latest",
+      "required": false,
+      "helpMarkDown": "Only used when uv has to be installed. `latest` or an exact version such as `0.8.0`.",
+      "visibleRule": "autoInstallUv = true"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "venvPath",
+      "description": "Absolute path of the venv"
+    },
+    {
+      "name": "venvPython",
+      "description": "Absolute path of the venv interpreter"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "minimumAgentVersion": "4.248.0"
+}

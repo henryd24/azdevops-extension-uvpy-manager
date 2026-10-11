@@ -1,0 +1,128 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "41bd6e4f-247f-4cab-b5c7-cffbc2f684ab",
+  "name": "UvPython",
+  "friendlyName": "Install and manage Python (uv)",
+  "description": "Install Python versions with uv, from an explicit list or from .python-version",
+  "helpMarkDown": "Install Python versions with uv and optionally make one the default",
+  "category": "Utility",
+  "author": "Henry Daniel Mosquera",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "instanceNameFormat": "Install and manage Python (uv)",
+  "inputs": [
+    {
+      "name": "versions",
+      "type": "multiLine",
+      "label": "Python versions",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "One per line or comma separated. Any uv request: `3.13`, `3.12.4`, `pypy@3.10`, `>=3.11`. Takes priority over the version file. Leave empty to read the version file.",
+      "properties": {
+        "resizable": "true",
+        "rows": "3"
+      }
+    },
+    {
+      "name": "pythonVersionFile",
+      "type": "string",
+      "label": "Version file",
+      "defaultValue": ".python-version",
+      "required": false,
+      "helpMarkDown": "Used only when 'Python versions' is empty. Relative to the working directory. Supports `.python-version` (one request per line, `#` comments) and `.tool-versions` (`python 3.12.4`)."
+    },
+    {
+      "name": "setDefault",
+      "type": "boolean",
+      "label": "Use the first version as default",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "Makes the first version the default for the following steps: sets UV_PYTHON to its path and, for interpreters managed by uv, puts it first in the PATH so `python` and `python3` resolve to it."
+    },
+    {
+      "name": "writePythonVersionFile",
+      "type": "boolean",
+      "label": "Write .python-version",
+      "defaultValue": "false",
+      "required": false,
+      "helpMarkDown": "After installing, runs `uv python pin` with the first version so the working directory keeps it. Ignored when the versions come from the file."
+    },
+    {
+      "name": "pythonPreference",
+      "type": "pickList",
+      "label": "Python preference",
+      "defaultValue": "managed",
+      "required": false,
+      "options": {
+        "managed": "Managed by uv (recommended)",
+        "only-managed": "Only managed by uv",
+        "system": "System first",
+        "only-system": "Only system"
+      },
+      "helpMarkDown": "Maps to UV_PYTHON_PREFERENCE and is inherited by the following steps. With `only-system` nothing is downloaded; uv only looks for interpreters already on the agent."
+    },
+    {
+      "name": "pythonInstallMirror",
+      "type": "string",
+      "label": "Python install mirror",
+      "defaultValue": "",
+      "required": false,
+      "helpMarkDown": "Maps to UV_PYTHON_INSTALL_MIRROR (python-build-standalone mirror) for agents without internet access."
+    },
+    {
+      "name": "workingDirectory",
+      "type": "filePath",
+      "label": "Working directory",
+      "defaultValue": "$(System.DefaultWorkingDirectory)",
+      "required": false,
+      "helpMarkDown": "Directory where uv runs."
+    },
+    {
+      "name": "autoInstallUv",
+      "type": "boolean",
+      "label": "Install uv if missing",
+      "defaultValue": "true",
+      "required": false,
+      "helpMarkDown": "If uv is not found, download it (same logic as the UvSetup task). Disable on locked-down agents and run UvSetup / pre-bake uv instead."
+    },
+    {
+      "name": "uvVersion",
+      "type": "string",
+      "label": "uv version",
+      "defaultValue": "latest",
+      "required": false,
+      "helpMarkDown": "Only used when uv has to be installed. `latest` or an exact version such as `0.8.0`.",
+      "visibleRule": "autoInstallUv = true"
+    }
+  ],
+  "outputVariables": [
+    {
+      "name": "pythonPath",
+      "description": "Path of the default interpreter"
+    },
+    {
+      "name": "pythonVersion",
+      "description": "Full version of the default interpreter"
+    },
+    {
+      "name": "pythonInstalledVersions",
+      "description": "JSON list of {request, path, version, managed} for every requested version"
+    }
+  ],
+  "execution": {
+    "Node20_1": {
+      "target": "index.js"
+    },
+    "Node24": {
+      "target": "index.js"
+    }
+  },
+  "minimumAgentVersion": "4.248.0"
+}

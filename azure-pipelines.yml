@@ -1,0 +1,102 @@
+# Valida la extensión en agentes reales de Azure Pipelines (Linux, Windows y macOS).
+# Ejecuta los bundles de las 4 tareas tal como los empaqueta la extensión
+# (scripts/run-task.js); el agente interpreta los ##vso que imprimen (PATH, variables, resultado).
+# El .vsix final lo genera GitHub Actions (.github/workflows/release.yml).
+trigger:
+  branches:
+    include: [trunk]
+pr:
+  branches:
+    include: [trunk]
+
+variables:
+  NODE_VERSION: 20.x
+
+stages:
+  - stage: Build
+    jobs:
+      - job: build
+        displayName: Test and package tasks
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+          - script: npm ci
+            displayName: Install
+          - script: npm test
+            displayName: Unit tests
+          - script: npm run typecheck
+            displayName: Typecheck
+          - script: npm run package:tasks
+            displayName: Bundle tasks (ncc)
+          - publish: tasks
+            artifact: tasks
+            displayName: Publish bundled tasks
+
+  - stage: Validate
+    dependsOn: Build
+    jobs:
+      - job: validate
+        displayName: Validate on
+        strategy:
+          maxParallel: 3
+          matrix:
+            linux:
+              vmImage: ubuntu-latest
+            windows:
+              vmImage: windows-latest
+            macos:
+              vmImage: macOS-latest
+        pool:
+          vmImage: $(vmImage)
+        variables:
+          TASKS_DIR: $(Pipeline.Workspace)/tasks
+          FIXTURE: $(Build.SourcesDirectory)/tests/fixtures/sample
+        steps:
+          - checkout: self
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+          - download: current
+            artifact: tasks
+
+          # --- UvSetup
+          - script: node scripts/run-task.js uv-setup version=0.8.0
+            name: uvsetup
+            displayName: UvSetup 0.8.0
+          - script: node scripts/expect.js "uv --version" "uv 0.8.0"
+            displayName: uv is on the PATH
+          - script: node scripts/run-task.js uv-setup version=0.8.0
+            name: uvsetup2
+            displayName: UvSetup 0.8.0 again (tool cache)
+          - script: node scripts/expect.js "echo $(uvsetup2.uvCacheHit)" "true"
+            displayName: Second run came from the cache
+
+          # --- UvPython
+          - script: node scripts/run-task.js uv-python versions=3.12 setDefault=true
+            name: py
+            displayName: UvPython 3.12 (explicit)
+          - script: node scripts/expect.js "python --version" "Python 3.12"
+            displayName: python resolves to 3.12
+          - script: node scripts/run-task.js uv-python versions= pythonVersionFile=.python-version setDefault=false workingDirectory=$(FIXTURE)
+            name: pyfile
+            displayName: UvPython from .python-version
+          - script: node scripts/expect.js "echo $(pyfile.pythonVersion)" "3.12"
+            displayName: Version read from the file
+
+          # --- UvVenv
+          - script: node scripts/run-task.js uv-venv syncMode=project activate=true workingDirectory=$(FIXTURE)
+            name: venv
+            displayName: UvVenv (uv sync)
+          - script: node scripts/expect.js "python tests/fixtures/check_env.py" ".venv"
+            displayName: Venv is active and has the dependencies
+          - script: node scripts/run-task.js uv-venv venvPath=env-req syncMode=requirements activate=false workingDirectory=$(FIXTURE)
+            displayName: UvVenv (requirements)
+
+          # --- UvRun
+          - script: node scripts/run-task.js uv-run "commands=pip list\nrun python ../check_env.py" workingDirectory=$(FIXTURE)
+            displayName: UvRun (several commands)
+          - script: node scripts/run-task.js uv-run commands=bogus-command failOnError=false workingDirectory=$(FIXTURE)
+            displayName: UvRun (failOnError=false keeps going)

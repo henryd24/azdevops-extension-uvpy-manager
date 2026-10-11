@@ -1,12 +1,12 @@
 // Ejecuta un script de npm (package, test, build…) en cada tarea de src/tasks.
-// Uso: node scripts/tasks.js <script> [tarea]
+// Usage: node scripts/tasks.js <script> [task]
 const { execSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const [script, only] = process.argv.slice(2);
 if (!script) {
-  console.error("Uso: node scripts/tasks.js <script> [tarea]");
+  console.error("Usage: node scripts/tasks.js <script> [task]");
   process.exit(1);
 }
 

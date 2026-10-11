@@ -33,3 +33,12 @@ dist
 
 # SO
 **DS_Store
+
+# Cobertura de tests / paquetes de dev
+*.vsix
+
+# Artefactos que generan los fixtures de validación
+tests/fixtures/**/.venv/
+tests/fixtures/**/env-*/
+tests/fixtures/**/uv.lock
+dist/
