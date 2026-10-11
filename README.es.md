@@ -1,3 +1,5 @@
+<p align="center"><img src="images/logo.png" alt="Logo de UvPy Manager" width="160"></p>
+
 # UvPy Manager
 
 🇬🇧 [English](README.md) · 🇪🇸 Español
