@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # El cooldown descarta versiones publicadas hace menos de N días: es la ventana en la que se
+  # detectan y retiran la mayoría de paquetes npm comprometidos (las de seguridad lo ignoran).
+  #
+  # Una sola entrada cubre las herramientas de empaquetado de la raíz y todas las tareas de
+  # src/tasks, así que los grupos abarcan el repo entero: como mucho un PR de seguridad y otro de
+  # minor/patch. Las majors llegan en PRs aparte para que una major que rompa no bloquee el resto.
+  # Los fixtures de tests (tests/fixtures) no se siguen a propósito.
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /src/tasks/*
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+      all-dependencies:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    open-pull-requests-limit: 5
+
+  # Mantiene al día las acciones de los workflows en un único PR.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
