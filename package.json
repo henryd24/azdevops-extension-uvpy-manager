@@ -4,8 +4,8 @@
   "description": "Azure DevOps extension to install uv, manage Python versions, create virtual environments and run uv commands on Linux, Windows and macOS.",
   "private": true,
   "scripts": {
-    "postinstall": "azde-scripts install src/tasks",
-    "build": "azde-scripts build src/tasks",
+    "postinstall": "node scripts/tasks.js install",
+    "build": "node scripts/tasks.js build",
     "test": "jest && node scripts/tasks.js test",
     "package:tasks": "node scripts/tasks.js package",
     "pack": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --overrides-file config/release.json",
@@ -18,7 +18,6 @@
   "author": "Henry Daniel Mosquera",
   "license": "MIT",
   "dependencies": {
-    "azde-scripts": "^2.0.2",
     "azure-pipelines-task-lib": "^5.281.2",
     "azure-pipelines-tool-lib": "^2.281.0",
     "tfx-cli": "^0.24.2",

@@ -339,7 +339,7 @@ Output: `exitCode` (0, or the exit code of the first failing command).
 # Development
 
 ```bash
-npm install                 # installs the root and every task (azde-scripts)
+npm install                 # installs the root and every task (postinstall runs npm ci per task)
 npm test                    # jest: src/shared + every task
 npm run typecheck           # tsc over shared and every task
 npm run pack:dev            # private development package (config/dev.json)
