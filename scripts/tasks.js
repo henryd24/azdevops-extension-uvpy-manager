@@ -1,4 +1,5 @@
 // Ejecuta un script de npm (package, test, build…) en cada tarea de src/tasks.
+// `install` hace `npm ci` en cada tarea (reemplaza a azde-scripts).
 // Usage: node scripts/tasks.js <script> [task]
 const { execSync } = require("node:child_process");
 const fs = require("node:fs");
@@ -17,6 +18,7 @@ const tasks = fs
   .filter((t) => !only || t === only);
 
 for (const task of tasks) {
-  console.log(`\n▶ ${task}: npm run ${script}`);
-  execSync(`npm run ${script}`, { cwd: path.join(root, task), stdio: "inherit" });
+  const cmd = script === "install" ? "npm ci" : `npm run ${script}`;
+  console.log(`\n▶ ${task}: ${cmd}`);
+  execSync(cmd, { cwd: path.join(root, task), stdio: "inherit" });
 }
