@@ -28,5 +28,13 @@
     "@types/node": "^26.6.6",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15"
+  },
+  "overrides": {
+    "archiver-utils": {
+      "glob": "^14.0.2"
+    },
+    "tfx-cli": {
+      "glob": "^14.0.2"
+    }
   }
 }
