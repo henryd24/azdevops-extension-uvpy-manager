@@ -18,14 +18,14 @@
   "author": "Henry Daniel Mosquera",
   "license": "MIT",
   "dependencies": {
-    "azure-pipelines-task-lib": "^5.281.2",
+    "azure-pipelines-task-lib": "^5.283.0",
     "azure-pipelines-tool-lib": "^2.281.0",
     "tfx-cli": "^0.24.2",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.3",
+    "@types/node": "^26.6.6",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15"
   }
