@@ -6,7 +6,7 @@ runs:
   steps:
     - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
       with:
-        node-version: 20
+        node-version: 24
 
     # --ignore-scripts skips the root postinstall (scripts/tasks.js install), so each task is
     # installed here with the same restriction.

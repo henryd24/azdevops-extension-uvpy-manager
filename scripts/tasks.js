@@ -18,7 +18,7 @@ const tasks = fs
   .filter((t) => !only || t === only);
 
 for (const task of tasks) {
-  const cmd = script === "install" ? "npm ci" : `npm run ${script}`;
+  const cmd = script === "install" ? "npm ci --ignore-scripts --no-audit --no-fund" : `npm run ${script}`;
   console.log(`\n▶ ${task}: ${cmd}`);
   execSync(cmd, { cwd: path.join(root, task), stdio: "inherit" });
 }
