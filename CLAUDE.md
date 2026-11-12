@@ -29,12 +29,12 @@ npm run pack:dev         # .vsix de desarrollo
 
 ## CI y releases
 
-- **GitHub Actions**: `ci.yml` (tests en 3 SO + `.vsix` dev) y `release.yml` (en push a `trunk` que cambie código: versión automática, tag, GitHub Release y `.vsix`; la versión de los `task.json` se fija en el release, no se sube a mano).
+- **GitHub Actions**: `ci.yml` (tests en 3 SO + `.vsix` dev) y `release.yml` (manual: sube la versión en `config/release.json` y todos los `task.json` y abre un PR `chore(release)`; al fusionarlo crea tag + GitHub Release y publica en el Marketplace por OIDC/Trusted Publishing; mismo flujo que exec-pipeline y sonarcloud. No subas la versión a mano).
 - **Azure Pipelines**: `azure-pipelines.yml` valida los bundles de las tareas en agentes Linux, Windows y macOS. Pipeline `azdevops-extension-uvpy-manager` (id 80), org `henrydanielmm`, proyecto `education`. El token está en la variable de entorno `PAT_AZ` (nunca imprimirlo ni pedirlo en el chat).
 
 ## Distribución
 
-La extensión **no se publica en el Marketplace**: es privada (`public: false`) y quien la quiera la empaqueta con su propio publisher (`npm run pack -- --publisher <id>`) y la instala en su organización (sección «Install in your organization» del README). `release.yml` usa el publisher de la variable de repo `EXTENSION_PUBLISHER` (por defecto `hendamm`). El README incluye un descargo de responsabilidad (MIT, sin soporte): mantenerlo.
+La extensión se publica en el Marketplace como **privada** (`public: false`, publisher `hendamm`, compartida solo con las organizaciones de Henry). Quien la quiera la empaqueta con su propio publisher (`npm run pack -- --publisher <id>`) y la instala en su organización (sección «Install in your organization» del README). El publisher de las releases sale de `config/release.json`. El README incluye un descargo de responsabilidad (MIT, sin soporte): mantenerlo.
 
 ## Pendiente (opcional)
 

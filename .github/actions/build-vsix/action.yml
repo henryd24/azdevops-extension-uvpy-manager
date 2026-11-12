@@ -1,0 +1,53 @@
+name: Build VSIX
+description: Installs dependencies, runs the checks and packages the extension into out/.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: 20
+
+    # --ignore-scripts skips the root postinstall (scripts/tasks.js install), so each task is
+    # installed here with the same restriction.
+    - name: Install dependencies (lockfiles only, no install scripts)
+      shell: bash
+      run: |
+        npm ci --ignore-scripts --no-audit --no-fund
+        for task in src/tasks/*/; do
+          npm ci --ignore-scripts --no-audit --no-fund --prefix "$task"
+        done
+
+    - name: Verify registry signatures of installed packages
+      shell: bash
+      run: |
+        npm audit signatures
+        for task in src/tasks/*/; do
+          npm audit signatures --prefix "$task"
+        done
+
+    - name: Test
+      shell: bash
+      run: npm test
+
+    - name: Typecheck
+      shell: bash
+      run: npm run typecheck
+
+    - name: Build tasks
+      shell: bash
+      run: npm run package:tasks
+
+    - name: Package extension
+      shell: bash
+      run: >
+        npx --no-install tfx extension create
+        --manifest-globs vss-extension.json
+        --overrides-file config/release.json
+        --output-path out/
+
+    - name: Check package
+      shell: bash
+      run: |
+        ls -l out/*.vsix
+        test "$(ls out/*.vsix | wc -l)" -eq 1

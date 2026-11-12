@@ -15,11 +15,11 @@ Sin scripts distintos por sistema operativo ni pasos de instalación hechos a ma
 | `UvVenv` | Crea un venv, sincroniza las dependencias y lo activa para los pasos siguientes. |
 | `UvRun` | Ejecuta uno o varios comandos de uv (`sync`, `pip install`, `run`, `build`, `tool run`...). |
 
-> **No está publicada en el Marketplace.** Es un proyecto comunitario que se distribuye como código fuente. Para usarla, empaqueta la extensión con tu propio publisher e instálala de forma privada en tu organización: ver [Instalar en tu organización](#instalar-en-tu-organización). Se ofrece tal cual, sin soporte: ver el [Descargo de responsabilidad](#descargo-de-responsabilidad).
+> **Extensión privada.** El mantenedor la publica en el Marketplace como extensión *privada* (`public: false`), compartida solo con sus organizaciones, así que no aparece en las búsquedas del Marketplace. Para usarla, empaqueta la extensión con tu propio publisher e instálala de forma privada en tu organización: ver [Instalar en tu organización](#instalar-en-tu-organización). Se ofrece tal cual, sin soporte: ver el [Descargo de responsabilidad](#descargo-de-responsabilidad).
 
 # Instalar en tu organización
 
-La extensión **no** está publicada en el Visual Studio Marketplace y no hay un `.vsix` compartido para descargar: una extensión de Azure DevOps va ligada a su publisher, así que la empaquetas con *tu* publisher y la instalas *de forma privada* en *tu* organización. Toma unos 10 minutos y tú controlas el código que corre en tus agentes.
+La extensión **no es pública** en el Visual Studio Marketplace (la copia del mantenedor es privada y solo está compartida con sus organizaciones): una extensión de Azure DevOps va ligada a su publisher, así que la empaquetas con *tu* publisher y la instalas *de forma privada* en *tu* organización. Toma unos 10 minutos y tú controlas el código que corre en tus agentes.
 
 1. **Crea un publisher** (gratis) en <https://marketplace.visualstudio.com/manage> y anota su ID, por ejemplo `mi-publisher`.
 2. **Obtén el código**: haz fork o clona este repositorio.
@@ -41,7 +41,7 @@ La extensión **no** está publicada en el Visual Studio Marketplace y no hay un
 
 Para actualizar, genera de nuevo con una versión mayor y publica el nuevo `.vsix` (el mismo comando `tfx extension publish`).
 
-**Automatízalo con un fork.** En tu fork define la variable de repositorio `EXTENSION_PUBLISHER` con el ID de tu publisher: cada push a `trunk` que cambie código crea un GitHub Release con el `.vsix` ya generado para tu publisher (ver [CI / CD](#ci--cd)).
+**Automatízalo con un fork.** En tu fork pon el ID de tu publisher en `config/release.json` y añade en tu publisher una política de Trusted Publishing para tu fork: el workflow de release construye, etiqueta y publica la extensión por ti (ver [CI / CD](#ci--cd)).
 
 > Al ser privada para tu organización, nadie más puede instalarla desde tu publisher y tú decides cuándo actualizar.
 
@@ -330,7 +330,7 @@ Output: `exitCode` (0, o el del primer comando que falló).
 # Descargo de responsabilidad
 
 - Es un proyecto personal y comunitario bajo la [licencia MIT](LICENSE): se ofrece **«tal cual», sin garantía de ningún tipo**, y el autor no se hace responsable de daños, pérdida de datos o costes derivados de su uso.
-- **No está publicada en el Marketplace**, **no tiene soporte ni SLA** y no está afiliada ni respaldada por Microsoft, Azure DevOps ni Astral (uv). Los issues y pull requests son bienvenidos, pero se atienden en la medida de lo posible.
+- **No es pública en el Marketplace**, **no tiene soporte ni SLA** y no está afiliada ni respaldada por Microsoft, Azure DevOps ni Astral (uv). Los issues y pull requests son bienvenidos, pero se atienden en la medida de lo posible.
 - Las tareas descargan y ejecutan binarios de terceros en tus agentes (uv y los Python que instala; la descarga de uv se verifica con checksum por defecto). **Revisa el código, fija versiones** (`UvSetup` con una `version` exacta) **y pruébala en un pipeline que no sea de producción** antes de depender de ella.
 - Tú eres responsable de empaquetar, publicar y operar tu propia copia de la extensión.
 
@@ -359,10 +359,15 @@ docs/DESIGN.md     decisiones de diseño y fases
 | Dónde | Archivo | Qué hace |
 | ----- | ------- | -------- |
 | GitHub Actions | `.github/workflows/ci.yml` | Tests y typecheck en Linux, Windows y macOS; empaqueta un `.vsix` de desarrollo (artifact `vsix-dev`). |
-| GitHub Actions | `.github/workflows/release.yml` | En cada push a `trunk` que toque código (`src/` sin tests, `vss-extension.json`, `config/release.json`, `images/`, `package*.json`, `tsconfig.json`) calcula la siguiente versión (patch sobre el último tag), crea el tag `vX.Y.Z` y el GitHub Release y adjunta el `.vsix` generado para el publisher de la variable de repositorio `EXTENSION_PUBLISHER` (por defecto `hendamm`, el del mantenedor). No se dispara con cambios en README, docs, tests, workflows ni pipelines. También se puede lanzar a mano eligiendo `patch`/`minor`/`major`. |
+| GitHub Actions | `.github/workflows/release.yml` | Se lanza a mano: sube la versión, la valida y abre un pull request `chore(release): vX.Y.Z`. Al fusionarlo se crean el tag y el GitHub Release con el `.vsix` y se publica en el Marketplace (privada). |
 | Azure Pipelines | `azure-pipelines.yml` | Empaqueta las tareas y las valida en agentes reales Linux, Windows y macOS: instala uv, Python, crea un venv y ejecuta comandos. |
 
-Para publicar basta con mergear a `trunk`: la versión de la extensión y la de cada `task.json` se fijan automáticamente en el release. Para subir minor o major, lanza el workflow a mano.
+### Releases
+
+1. Lanza **Actions → Release → Run workflow** sobre `trunk` y elige `patch`, `minor` o `major`. El workflow sube la versión en `config/release.json` y en todos los `src/tasks/*/task.json`, ejecuta tests, typecheck y empaquetado, y abre un pull request `chore(release): vX.Y.Z`.
+2. Al fusionarlo se crean el tag `vX.Y.Z` y un GitHub Release con el `.vsix` adjunto, y ese mismo `.vsix` se publica en el Visual Studio Marketplace (sigue siendo privada).
+
+La publicación usa [Trusted Publishing](https://learn.microsoft.com/azure/devops/extend/publish/overview#publish-with-oidc-trusted-publishing) (OIDC), sin PAT guardado. Necesita una política de Trusted Publishing en el publisher `hendamm` que apunte a este repositorio y al workflow `release.yml` (sin environment), y activar *Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*.
 
 La validación de Azure ejecuta los bundles con `scripts/run-task.js` (el agente interpreta los comandos `##vso` que imprimen) y comprueba el resultado con `scripts/expect.js`. También sirve en local tras `npm run package:tasks`:
 
