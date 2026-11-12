@@ -10,7 +10,7 @@ pr:
     include: [trunk]
 
 variables:
-  NODE_VERSION: 20.x
+  NODE_VERSION: 24.x
 
 stages:
   - stage: Build
@@ -20,9 +20,9 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - task: NodeTool@0
+          - task: UseNode@1
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
           - script: npm ci
             displayName: Install
           - script: npm test
@@ -56,9 +56,9 @@ stages:
           FIXTURE: $(Build.SourcesDirectory)/tests/fixtures/sample
         steps:
           - checkout: self
-          - task: NodeTool@0
+          - task: UseNode@1
             inputs:
-              versionSpec: $(NODE_VERSION)
+              version: $(NODE_VERSION)
           - download: current
             artifact: tasks
 

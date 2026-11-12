@@ -1,5 +1,18 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["./**/*", "../../shared/**/*"],
-  "exclude": ["test", "**/*spec.ts", "**/__tests__/**", "../../shared/__tests__/**"]
+  "compilerOptions": {
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "../../shared/**/*"
+  ],
+  "exclude": [
+    "**/__tests__/**",
+    "../../shared/__tests__/**",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }

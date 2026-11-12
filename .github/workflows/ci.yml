@@ -1,54 +1,65 @@
 name: CI
 
+# Security notes:
+# - Uses `pull_request` (never `pull_request_target`): PRs from forks run with a
+#   read-only token and without access to repository secrets.
+# - This workflow must not use secrets. Publishing belongs in the Release workflow.
+# - Every action is pinned to a full commit SHA (scripts/check-workflows.js enforces it).
+# - Dependencies are installed with --ignore-scripts so no package can run install hooks.
+
+# Changes that do not affect the code (documentation, markdown, license, images) do not run CI.
 on:
   push:
-    branches: [trunk, "claude/**"]
+    branches: [trunk]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "images/**"
+      - "LICENSE"
+      - ".gitignore"
   pull_request:
     branches: [trunk]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "images/**"
+      - "LICENSE"
+      - ".gitignore"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test (${{ matrix.os }})
+  build:
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npm test
-      - run: npm run typecheck
+          persist-credentials: false
 
-  package:
-    name: Package dev .vsix
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      # Installs, verifies signatures, tests (including the workflow security rules), typechecks,
+      # bundles the tasks and packages the .vsix.
+      - uses: ./.github/actions/build-vsix
+
+      - name: Audit production dependencies
+        if: runner.os == 'Linux'
+        run: npm audit --omit=dev --audit-level=critical
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: runner.os == 'Linux'
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
-      - run: npm run pack:dev
-      - uses: actions/upload-artifact@v7
-        with:
-          name: vsix-dev
-          path: "*.vsix"
+          name: vsix
+          path: out/*.vsix
           if-no-files-found: error
           retention-days: 14
