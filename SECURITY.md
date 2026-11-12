@@ -25,4 +25,4 @@ problems in those projects to them; report here anything about how the tasks dow
 - Every action is pinned to a full commit SHA, and `scripts/check-workflows.js` enforces these rules in CI.
 - Dependencies are installed from the lockfile with `--ignore-scripts`, and their registry signatures are verified.
 - Dependabot waits 7 days (30 for majors) before proposing a new version.
-- CodeQL analyzes the code on every pull request and weekly.
+- CodeQL (default setup) analyzes the code and the workflows on every pull request and weekly.
