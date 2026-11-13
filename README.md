@@ -15,11 +15,11 @@ No per-OS scripts and no hand-rolled install steps: four small tasks that chain 
 | `UvVenv` | Creates a virtual environment, syncs dependencies and activates it for the following steps. |
 | `UvRun` | Runs one or more uv commands (`sync`, `pip install`, `run`, `build`, `tool run`...). |
 
-> **Not published on the Marketplace.** This is a community project distributed as source. To use it, build the extension with your own publisher and install it privately in your organization: see [Install in your organization](#install-in-your-organization). It is provided as is, without support: see the [Disclaimer](#disclaimer).
+> **Private extension.** The maintainer publishes it to the Marketplace as a *private* extension (`public: false`), shared only with their own organizations, so it does not show up in Marketplace search. To use it, build the extension with your own publisher and install it privately in your organization: see [Install in your organization](#install-in-your-organization). It is provided as is, without support: see the [Disclaimer](#disclaimer).
 
 # Install in your organization
 
-The extension is **not** published on the Visual Studio Marketplace, and there is no shared `.vsix` to download: an Azure DevOps extension is tied to its publisher, so you build it with *your* publisher and install it *privately* in *your* organization. It takes about 10 minutes and you stay in control of the code that runs on your agents.
+The extension is **not public** on the Visual Studio Marketplace (the maintainer's copy is private and shared only with their organizations): an Azure DevOps extension is tied to its publisher, so you build it with *your* publisher and install it *privately* in *your* organization. It takes about 10 minutes and you stay in control of the code that runs on your agents.
 
 1. **Create a publisher** (free) at <https://marketplace.visualstudio.com/manage> and note its ID, for example `my-publisher`.
 2. **Get the code**: fork or clone this repository.
@@ -41,7 +41,7 @@ The extension is **not** published on the Visual Studio Marketplace, and there i
 
 To update, build again with a higher version and publish the new `.vsix` (the same `tfx extension publish` command).
 
-**Automate it with a fork.** In your fork, set the repository variable `EXTENSION_PUBLISHER` to your publisher ID: every push to `trunk` that changes code creates a GitHub Release with the `.vsix` already built for your publisher (see [CI / CD](#ci--cd)).
+**Automate it with a fork.** In your fork, set your publisher ID in `config/release.json` and add a Trusted Publishing policy for your fork in your publisher: the release workflow then builds, tags and publishes the extension for you (see [CI / CD](#ci--cd)).
 
 > Because the extension is private to your organization, nobody else can install it from your publisher, and you decide when to update.
 
@@ -330,7 +330,7 @@ Output: `exitCode` (0, or the exit code of the first failing command).
 # Disclaimer
 
 - This is a personal, community project released under the [MIT License](LICENSE): it is provided **"as is", without warranty of any kind**, and the author is not liable for any damage, data loss or cost derived from using it.
-- It is **not published on the Marketplace**, has **no support or SLA** and is not affiliated with or endorsed by Microsoft, Azure DevOps or Astral (uv). Issues and pull requests are welcome, but they are handled on a best-effort basis.
+- It is **not public on the Marketplace**, has **no support or SLA** and is not affiliated with or endorsed by Microsoft, Azure DevOps or Astral (uv). Issues and pull requests are welcome, but they are handled on a best-effort basis.
 - The tasks download and run third-party binaries on your agents (uv and the Python builds it installs; the uv download is checksum-verified by default). **Review the code, pin versions** (`UvSetup` with an exact `version`) **and test in a non-production pipeline** before relying on it.
 - You are responsible for building, publishing and operating your own copy of the extension.
 
@@ -359,10 +359,15 @@ docs/DESIGN.md     design decisions and phases (Spanish)
 | Where | File | What it does |
 | ----- | ---- | ------------ |
 | GitHub Actions | `.github/workflows/ci.yml` | Tests and typecheck on Linux, Windows and macOS; builds a development `.vsix` (`vsix-dev` artifact). |
-| GitHub Actions | `.github/workflows/release.yml` | On every push to `trunk` that touches code (`src/` excluding tests, `vss-extension.json`, `config/release.json`, `images/`, `package*.json`, `tsconfig.json`) it computes the next version (patch bump over the latest tag), creates the `vX.Y.Z` tag and GitHub Release, and attaches the `.vsix` built for the publisher in the `EXTENSION_PUBLISHER` repository variable (default `hendamm`, the maintainer's). It does not run for changes to the README, docs, tests, workflows or pipelines. It can also be started manually, choosing `patch`/`minor`/`major`. |
+| GitHub Actions | `.github/workflows/release.yml` | Run manually: bumps the version, verifies it and opens a `chore(release): vX.Y.Z` pull request. Merging that pull request tags the release, creates the GitHub Release with the `.vsix` and publishes it to the Marketplace (private). |
 | Azure Pipelines | `azure-pipelines.yml` | Packages the tasks and validates them on real Linux, Windows and macOS agents: installs uv and Python, creates a venv and runs commands. |
 
-To publish, just merge to `trunk`: the extension version and each task's `task.json` version are set automatically by the release. To bump minor or major, run the workflow manually.
+### Releases
+
+1. Run **Actions → Release → Run workflow** on `trunk` and pick `patch`, `minor` or `major`. The workflow bumps the version in `config/release.json` and every `src/tasks/*/task.json`, runs tests, typecheck and packaging, and opens a `chore(release): vX.Y.Z` pull request.
+2. Merging it creates the `vX.Y.Z` tag and a GitHub Release with the `.vsix` attached, and then publishes that same `.vsix` to the Visual Studio Marketplace (still private).
+
+Marketplace publishing uses [Trusted Publishing](https://learn.microsoft.com/azure/devops/extend/publish/overview#publish-with-oidc-trusted-publishing) (OIDC), so no PAT is stored. It requires a Trusted Publishing policy on the `hendamm` publisher pointing to this repository and the `release.yml` workflow (no environment), and *Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*.
 
 The Azure validation runs the task bundles with `scripts/run-task.js` (the agent interprets the `##vso` commands they print) and checks the result with `scripts/expect.js`. It also works locally after `npm run package:tasks`:
 

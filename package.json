@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "node scripts/tasks.js install",
     "build": "node scripts/tasks.js build",
-    "test": "jest && node scripts/tasks.js test",
+    "test": "jest && node scripts/tasks.js test && node scripts/check-workflows.js",
     "package:tasks": "node scripts/tasks.js package",
     "pack": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --overrides-file config/release.json",
     "packupversion": "npm run package:tasks && tfx extension create --manifest-globs vss-extension.json --rev-version --overrides-file config/release.json",
@@ -19,15 +19,19 @@
   "license": "MIT",
   "dependencies": {
     "azure-pipelines-task-lib": "^5.283.0",
-    "azure-pipelines-tool-lib": "^2.281.0",
-    "tfx-cli": "^0.24.2",
-    "typescript": "^5.7.2"
+    "azure-pipelines-tool-lib": "^2.281.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.13",
+    "@babel/preset-env": "^7.29.0",
+    "@babel/preset-typescript": "^7.29.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
+    "babel-jest": "^30.5.2",
     "jest": "^30.5.2",
-    "ts-jest": "^29.4.15"
+    "js-yaml": "^5.5.0",
+    "tfx-cli": "^0.24.2",
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "archiver-utils": {

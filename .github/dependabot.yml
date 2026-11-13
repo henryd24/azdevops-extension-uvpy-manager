@@ -1,12 +1,11 @@
 version: 2
 updates:
-  # El cooldown descarta versiones publicadas hace menos de N días: es la ventana en la que se
-  # detectan y retiran la mayoría de paquetes npm comprometidos (las de seguridad lo ignoran).
+  # The cooldown skips versions published less than N days ago, which is the window in which most
+  # compromised npm packages are detected and removed (security updates ignore it).
   #
-  # Una sola entrada cubre las herramientas de empaquetado de la raíz y todas las tareas de
-  # src/tasks, así que los grupos abarcan el repo entero: como mucho un PR de seguridad y otro de
-  # minor/patch. Las majors llegan en PRs aparte para que una major que rompa no bloquee el resto.
-  # Los fixtures de tests (tests/fixtures) no se siguen a propósito.
+  # One entry covers the packaging tools of the root and every task package, so each group spans the
+  # whole repository: at most one pull request for security fixes and one for minor/patch updates.
+  # Major updates arrive as separate pull requests so a breaking major cannot block the rest.
   - package-ecosystem: npm
     directories:
       - /
@@ -25,10 +24,17 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
     open-pull-requests-limit: 5
+    ignore:
+      # Babel 8 is not supported yet by Jest's own preset (babel-preset-jest pulls Babel 7 plugins with a
+      # peer on @babel/core ^7). Remove this once Jest supports Babel 8.
+      - dependency-name: "@babel/*"
+        update-types: ["version-update:semver-major"]
 
-  # Mantiene al día las acciones de los workflows en un único PR.
+  # Keeps the SHA-pinned actions of the workflows up to date in a single pull request.
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
+      - /.github/actions/*
     schedule:
       interval: weekly
     cooldown:

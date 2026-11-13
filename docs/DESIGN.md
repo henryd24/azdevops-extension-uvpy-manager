@@ -59,7 +59,7 @@ cada tarea ──► ensureUv()
 
 ## CI / validación
 
-- **GitHub Actions** construye y publica el `.vsix` (dev en cada push; el release final sale solo en cada push a trunk que cambie código, con versión automática). No puede ejecutar tareas como tareas de Azure.
+- **GitHub Actions** construye y publica el `.vsix` (dev en cada push; el release se lanza a mano: abre un PR `chore(release)` y al fusionarlo crea tag + GitHub Release y publica en el Marketplace como privada por OIDC; la versión vive en `config/release.json` y los `task.json`, inicializada en 1.0.3, el último tag). No puede ejecutar tareas como tareas de Azure.
 - **Azure Pipelines** (`azure-pipelines.yml`) ejecuta los bundles de las tareas en Linux, Windows y macOS hospedados. No instala la extensión: corre `tasks/<tarea>/index.js` desde un paso `script` y el agente procesa los `##vso` (PATH, variables, resultado). Cubre la lógica de las tareas en cada SO, pero no el parseo de `task.json` ni el UI del editor de pipelines; eso se prueba instalando el `.vsix` dev en la organización.
 - Pendiente: un caso Alpine/musl (los contenedores Alpine requieren bash/node en la imagen) y Windows/macOS ARM.
 - **Validado (pipeline `azdevops-extension-uvpy-manager`, id 80, org `henrydanielmm`, proyecto `education`):** build + las 4 tareas en ubuntu, windows y macOS en verde. La validación encontró y corrigió: `run-task.js` no aplicaba los `defaultValue` de `task.json` ni expandía `$(Var)` (el agente real sí); `%0A` en `cmd.exe` (ahora se acepta `\n` literal); y un bug real de `UvVenv` en modo `requirements`: `UV_PYTHON` (exportado por `UvPython`) tenía prioridad sobre `VIRTUAL_ENV`, así que ahora se pasa `--python` al venv.
