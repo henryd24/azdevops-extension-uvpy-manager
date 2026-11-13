@@ -18,7 +18,7 @@
   "author": "Henry Daniel Mosquera",
   "license": "MIT",
   "dependencies": {
-    "azure-pipelines-task-lib": "^5.282.0",
+    "azure-pipelines-task-lib": "^5.283.0",
     "azure-pipelines-tool-lib": "^2.281.0"
   },
   "devDependencies": {
@@ -32,5 +32,13 @@
     "js-yaml": "^5.5.0",
     "tfx-cli": "^0.24.2",
     "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "archiver-utils": {
+      "glob": "^14.0.2"
+    },
+    "tfx-cli": {
+      "glob": "^14.0.2"
+    }
   }
 }
